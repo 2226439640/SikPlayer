@@ -17,6 +17,15 @@ public:
 
 private:
     Ui::mystatusWidget *ui;
+    bool isplay;
+
+public slots:
+    void sendPlay();
+    void sendStop();
+
+signals:
+    void Play();
+    void Stop();
 };
 
 #endif // MYSTATUSWIDGET_H

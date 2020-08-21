@@ -9,6 +9,7 @@ mystatusWidget::mystatusWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::mystatusWidget)
 {
+    isplay = false;
     ui->setupUi(this);
     ui->upButton->setIcon(QIcon(upUrl));
     ui->upButton->setFixedWidth(50);
@@ -21,9 +22,33 @@ mystatusWidget::mystatusWidget(QWidget *parent) :
     ui->stopButton->setFlat(true);
     ui->stopButton->setFixedSize(50, 50);
     ui->timelabel->setFixedHeight(50);
+
+    connect(ui->stopButton, &QPushButton::clicked, this, [&](){
+        if(isplay)
+        {
+            ui->stopButton->setIcon(QIcon(stopUrl));
+            sendStop();
+        }
+        else
+        {
+            ui->stopButton->setIcon(QIcon(startUrl));
+            sendStop();
+        }
+        isplay = !isplay;
+    });
 }
 
 mystatusWidget::~mystatusWidget()
 {
     delete ui;
+}
+
+void mystatusWidget::sendPlay()
+{
+    emit Play();
+}
+
+void mystatusWidget::sendStop()
+{
+    emit Stop();
 }

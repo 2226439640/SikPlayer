@@ -5,6 +5,7 @@
 #include <QMediaPlayer>
 #include <QVideoWidget>
 #include <QTableWidget>
+#include <QMediaPlaylist>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SikPlayer; }
@@ -27,5 +28,7 @@ private:
     QVideoWidget* videoWidget;
     QTableWidget* fileBrowser;
     QMediaPlayer* player;
+    QMediaPlaylist* playlist;
+    void updateList(QStringList& playlist);
 };
 #endif // SIKPLAYER_H
