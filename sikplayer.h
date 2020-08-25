@@ -29,6 +29,8 @@ private:
     QTableWidget* fileBrowser;
     QMediaPlayer* player;
     QMediaPlaylist* playlist;
+    qint64 playtime;
     void updateList(QStringList& playlist);
+    QString toTime(qint64 s);
 };
 #endif // SIKPLAYER_H

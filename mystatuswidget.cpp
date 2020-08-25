@@ -32,7 +32,7 @@ mystatusWidget::mystatusWidget(QWidget *parent) :
         else
         {
             ui->stopButton->setIcon(QIcon(startUrl));
-            sendStop();
+            sendPlay();
         }
         isplay = !isplay;
     });

@@ -9,6 +9,7 @@
 #include "mystatuswidget.h"
 #include <QTableWidgetItem>
 #include "QMessageBox"
+#include "QDebug"
 using namespace SikConfig;
 
 SikPlayer::SikPlayer(QWidget *parent)
@@ -24,12 +25,12 @@ SikPlayer::SikPlayer(QWidget *parent)
 
 
 
-//    QPalette pal;
-//    pal.setColor(QPalette::Background, Qt::black);
+    QPalette pal;
+    pal.setColor(QPalette::Background, Qt::black);
 //    ui->FileBrowser->setAutoFillBackground(true);
 //    ui->FileBrowser->setPalette(pal);
-//    ui->centralwidget->setAutoFillBackground(true);
-//    ui->centralwidget->setPalette(pal);
+    ui->centralwidget->setAutoFillBackground(true);
+    ui->centralwidget->setPalette(pal);
 
     QGridLayout* layout = new QGridLayout();
     layout->setMargin(0);
@@ -43,8 +44,15 @@ SikPlayer::SikPlayer(QWidget *parent)
     fileBrowser->setColumnCount(2);
     fileBrowser->setHorizontalHeaderLabels({"文件名", "时间"});
     fileBrowser->setFixedWidth(200);
+    fileBrowser->setAlternatingRowColors(true);
+    fileBrowser->setStyleSheet("border: 0px; color: #6b6d7b; alternate-background-color: #FFFFE0; background: white");
+    fileBrowser->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
     mystatusWidget* status = new mystatusWidget(this);
     status->setFixedHeight(150);
+    pal.setColor(QPalette::Background, Qt::white);
+    status->setAutoFillBackground(true);
+    status->setPalette(pal);
+
     layout->addWidget(videoWidget, 0, 0, 1, 4);
     layout->addWidget(fileBrowser, 0, 4, 1, 1);
     layout->addWidget(status, 1, 0, 1, 5);
@@ -64,16 +72,29 @@ SikPlayer::SikPlayer(QWidget *parent)
         updateList(filelist);
     });
 
+    connect(player, &QMediaPlayer::durationChanged, this, [&](qint64 playtime){
+        playtime = playtime;
+    });
+
     connect(status, &mystatusWidget::Play, this, [&](){
         if(playlist->isEmpty())
         {
-            QMessageBox();
+            QMessageBox::warning(videoWidget, "", "请选择文件!");
             return;
         }
         player->play();
     });
 
     connect(status, &mystatusWidget::Stop, this, [&](){
+        player->pause();
+    });
+
+    connect(fileBrowser, &QTableWidget::cellDoubleClicked, this, [&](int x, int y){
+        if(y==1) return;
+        playlist->setCurrentIndex(x);
+        qDebug()<<playtime;
+        QTableWidgetItem *myitem = new QTableWidgetItem(toTime(playtime));
+        fileBrowser->setItem(x, y+1, myitem);
         player->play();
     });
 
@@ -99,4 +120,10 @@ void SikPlayer::updateList(QStringList &playlist)
         QTableWidgetItem* item = new QTableWidgetItem(splname[splname.size()-1]);
         fileBrowser->setItem(i, 0, item);
     }
+}
+
+QString SikPlayer::toTime(qint64 s)
+{
+    QString totime = "%1:%2:%3.%4";
+    return totime.arg(s/3600000).arg((s%3600000)/60000).arg((s%3600000)%60000/1000).arg((s%3600000)%60000%1000);
 }
